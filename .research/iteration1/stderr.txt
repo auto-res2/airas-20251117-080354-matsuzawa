@@ -219,3 +219,145 @@ warning: No `requires-python` value found in the workspace. Defaulting to `>=3.1
 Map:   0%|          | 0/747 [00:00<?, ? examples/s]Map:  23%|██▎       | 173/747 [00:00<00:00, 1701.91 examples/s]Map:  47%|████▋     | 352/747 [00:00<00:00, 1746.79 examples/s]Map:  71%|███████   | 529/747 [00:00<00:00, 1748.93 examples/s]Map:  94%|█████████▍| 705/747 [00:00<00:00, 1748.48 examples/s]Map: 100%|██████████| 747/747 [00:00<00:00, 1649.63 examples/s]
 `torch_dtype` is deprecated! Use `dtype` instead!
 You're using a Qwen2TokenizerFast tokenizer. Please note that with a fast tokenizer, using the `__call__` method is faster than using a method to encode the text followed by a call to the `pad` method to get a padded encoding.
+Using CPython 3.11.14
+Creating virtual environment at: .venv
+warning: No `requires-python` value found in the workspace. Defaulting to `>=3.11`.
+Resolved 99 packages in 688ms
+Installed 97 packages in 7.96s
+ + accelerate==1.11.0
+ + aiohappyeyeballs==2.6.1
+ + aiohttp==3.13.2
+ + aiosignal==1.4.0
+ + alembic==1.17.2
+ + annotated-types==0.7.0
+ + antlr4-python3-runtime==4.9.3
+ + anyio==4.11.0
+ + attrs==25.4.0
+ + certifi==2025.11.12
+ + charset-normalizer==3.4.4
+ + click==8.3.1
+ + colorlog==6.10.1
+ + contourpy==1.3.3
+ + cycler==0.12.1
+ + datasets==4.4.1
+ + dill==0.4.0
+ + filelock==3.20.0
+ + fonttools==4.60.1
+ + frozenlist==1.8.0
+ + fsspec==2025.10.0
+ + gitdb==4.0.12
+ + gitpython==3.1.45
+ + greenlet==3.2.4
+ + h11==0.16.0
+ + hf-xet==1.2.0
+ + httpcore==1.0.9
+ + httpx==0.28.1
+ + huggingface-hub==0.36.0
+ + hydra-core==1.3.2
+ + idna==3.11
+ + jinja2==3.1.6
+ + kiwisolver==1.4.9
+ + mako==1.3.10
+ + markupsafe==3.0.3
+ + matplotlib==3.10.7
+ + mpmath==1.3.0
+ + multidict==6.7.0
+ + multiprocess==0.70.18
+ + networkx==3.5
+ + numpy==2.3.5
+ + nvidia-cublas-cu12==12.8.4.1
+ + nvidia-cuda-cupti-cu12==12.8.90
+ + nvidia-cuda-nvrtc-cu12==12.8.93
+ + nvidia-cuda-runtime-cu12==12.8.90
+ + nvidia-cudnn-cu12==9.10.2.21
+ + nvidia-cufft-cu12==11.3.3.83
+ + nvidia-cufile-cu12==1.13.1.3
+ + nvidia-curand-cu12==10.3.9.90
+ + nvidia-cusolver-cu12==11.7.3.90
+ + nvidia-cusparse-cu12==12.5.8.93
+ + nvidia-cusparselt-cu12==0.7.1
+ + nvidia-nccl-cu12==2.27.5
+ + nvidia-nvjitlink-cu12==12.8.93
+ + nvidia-nvshmem-cu12==3.3.20
+ + nvidia-nvtx-cu12==12.8.90
+ + omegaconf==2.3.0
+ + optuna==4.6.0
+ + packaging==25.0
+ + pandas==2.3.3
+ + peft==0.18.0
+ + pillow==12.0.0
+ + platformdirs==4.5.0
+ + propcache==0.4.1
+ + protobuf==6.33.1
+ + psutil==7.1.3
+ + pyarrow==22.0.0
+ + pydantic==2.12.4
+ + pydantic-core==2.41.5
+ + pyparsing==3.2.5
+ + python-dateutil==2.9.0.post0
+ + pytz==2025.2
+ + pyyaml==6.0.3
+ + regex==2025.11.3
+ + requests==2.32.5
+ + robust-lr-experiments==0.1.0 (from file:///mnt/home/toma/KRK-039/_work/airas-20251117-080354-matsuzawa/airas-20251117-080354-matsuzawa)
+ + safetensors==0.6.2
+ + scipy==1.16.3
+ + seaborn==0.13.2
+ + sentry-sdk==2.44.0
+ + six==1.17.0
+ + smmap==5.0.2
+ + sniffio==1.3.1
+ + sqlalchemy==2.0.44
+ + sympy==1.14.0
+ + tokenizers==0.22.1
+ + torch==2.9.1
+ + tqdm==4.67.1
+ + transformers==4.57.1
+ + triton==3.5.1
+ + typing-extensions==4.15.0
+ + typing-inspection==0.4.2
+ + tzdata==2025.2
+ + urllib3==2.5.0
+ + wandb==0.23.0
+ + xxhash==3.6.0
+ + yarl==1.22.0
+warning: No `requires-python` value found in the workspace. Defaulting to `>=3.11`.
+wandb: Currently logged in as: gengaru617 (gengaru617-personal) to https://api.wandb.ai. Use `wandb login --relogin` to force relogin
+wandb: setting up run base-placeholder
+wandb: Tracking run with wandb version 0.23.0
+wandb: Run data is saved locally in /mnt/home/toma/KRK-039/_work/airas-20251117-080354-matsuzawa/airas-20251117-080354-matsuzawa/wandb/run-20251117_191410-base-placeholder
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Resuming run base-placeholder
+wandb: ⭐️ View project at https://wandb.ai/gengaru617-personal/2025-11-17
+wandb: 🚀 View run at https://wandb.ai/gengaru617-personal/2025-11-17/runs/base-placeholder
+wandb: WARNING The get_url method is deprecated and will be removed in a future release. Please use `run.url` instead.
+Generating train split:   0%|          | 0/7473 [00:00<?, ? examples/s]Generating train split: 100%|██████████| 7473/7473 [00:00<00:00, 151645.36 examples/s]
+Generating test split:   0%|          | 0/1319 [00:00<?, ? examples/s]Generating test split: 100%|██████████| 1319/1319 [00:00<00:00, 109682.73 examples/s]
+Map:   0%|          | 0/6726 [00:00<?, ? examples/s]Map:   2%|▏         | 115/6726 [00:00<00:05, 1139.50 examples/s]Map:   4%|▍         | 269/6726 [00:00<00:04, 1372.24 examples/s]Map:   7%|▋         | 476/6726 [00:00<00:04, 1371.79 examples/s]Map:   9%|▉         | 637/6726 [00:00<00:04, 1452.12 examples/s]Map:  12%|█▏        | 784/6726 [00:00<00:04, 1456.42 examples/s]Map:  14%|█▍        | 954/6726 [00:00<00:03, 1530.77 examples/s]Map:  17%|█▋        | 1143/6726 [00:00<00:04, 1388.61 examples/s]Map:  19%|█▉        | 1287/6726 [00:00<00:03, 1400.69 examples/s]Map:  22%|██▏       | 1505/6726 [00:01<00:03, 1417.42 examples/s]Map:  25%|██▍       | 1653/6726 [00:01<00:03, 1433.07 examples/s]Map:  27%|██▋       | 1805/6726 [00:01<00:03, 1435.09 examples/s]Map:  29%|██▉       | 1971/6726 [00:01<00:03, 1494.34 examples/s]Map:  32%|███▏      | 2154/6726 [00:01<00:03, 1390.37 examples/s]Map:  34%|███▍      | 2317/6726 [00:01<00:03, 1451.99 examples/s]Map:  37%|███▋      | 2467/6726 [00:01<00:02, 1462.00 examples/s]Map:  39%|███▉      | 2644/6726 [00:01<00:02, 1540.59 examples/s]Map:  42%|████▏     | 2810/6726 [00:01<00:02, 1571.35 examples/s]Map:  44%|████▍     | 2979/6726 [00:02<00:02, 1601.47 examples/s]Map:  48%|████▊     | 3197/6726 [00:02<00:02, 1542.58 examples/s]Map:  50%|█████     | 3375/6726 [00:02<00:02, 1604.45 examples/s]Map:  54%|█████▎    | 3612/6726 [00:02<00:01, 1591.25 examples/s]Map:  56%|█████▌    | 3779/6726 [00:02<00:01, 1608.76 examples/s]Map:  59%|█████▊    | 3943/6726 [00:02<00:01, 1613.15 examples/s]Map:  62%|██████▏   | 4155/6726 [00:02<00:01, 1458.96 examples/s]Map:  64%|██████▍   | 4316/6726 [00:02<00:01, 1491.76 examples/s]Map:  68%|██████▊   | 4549/6726 [00:03<00:01, 1510.40 examples/s]Map:  70%|███████   | 4721/6726 [00:03<00:01, 1561.43 examples/s]Map:  73%|███████▎  | 4901/6726 [00:03<00:01, 1620.78 examples/s]Map:  76%|███████▌  | 5091/6726 [00:03<00:01, 1487.45 examples/s]Map:  78%|███████▊  | 5259/6726 [00:03<00:00, 1535.37 examples/s]Map:  81%|████████▏ | 5481/6726 [00:03<00:00, 1514.08 examples/s]Map:  84%|████████▍ | 5637/6726 [00:03<00:00, 1524.00 examples/s]Map:  87%|████████▋ | 5862/6726 [00:03<00:00, 1511.77 examples/s]Map:  90%|████████▉ | 6031/6726 [00:04<00:00, 1379.83 examples/s]Map:  92%|█████████▏| 6199/6726 [00:04<00:00, 1450.58 examples/s]Map:  95%|█████████▍| 6386/6726 [00:04<00:00, 1369.93 examples/s]Map:  97%|█████████▋| 6541/6726 [00:04<00:00, 1412.11 examples/s]Map: 100%|██████████| 6726/6726 [00:04<00:00, 1262.37 examples/s]Map: 100%|██████████| 6726/6726 [00:04<00:00, 1462.32 examples/s]
+Map:   0%|          | 0/747 [00:00<?, ? examples/s]Map:  21%|██▏       | 159/747 [00:00<00:00, 1566.99 examples/s]Map:  43%|████▎     | 322/747 [00:00<00:00, 1598.81 examples/s]Map:  70%|███████   | 524/747 [00:00<00:00, 1448.06 examples/s]Map: 100%|█████████▉| 745/747 [00:00<00:00, 1455.93 examples/s]Map: 100%|██████████| 747/747 [00:00<00:00, 1403.89 examples/s]
+`torch_dtype` is deprecated! Use `dtype` instead!
+You're using a Qwen2TokenizerFast tokenizer. Please note that with a fast tokenizer, using the `__call__` method is faster than using a method to encode the text followed by a call to the `pad` method to get a padded encoding.
+wandb: updating run metadata
+wandb: uploading output.log; uploading wandb-summary.json; uploading config.yaml
+wandb: uploading wandb-summary.json; uploading config.yaml
+wandb: 
+wandb: Run history:
+wandb:                epoch ▁▁▁▁▁▁▁▁▁▁▁▁▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅████████████
+wandb:      train_step_loss █▇▅▄▇▆█▆▆▆▅▄▆▇▆█▄▂▃▅▆▆▇▄▅▄▆▄▆▁▂▄▅▅▁▄▃▆▃▁
+wandb: train_step_token_acc ▅▁▁▁▁▅▁▃▁▃▃▁▃▅▁▅▃▁▃▁▃▃▃█▅▁▆▃▆▃▇▃▁▅▁▁▁▁▄▅
+wandb:             val_loss ▁▂█
+wandb:        val_token_acc ▁█▆
+wandb: 
+wandb: Run summary:
+wandb:   best_val_token_acc 0.06106
+wandb:           checkpoint /mnt/home/toma/KRK-0...
+wandb:                epoch 2
+wandb:      train_step_loss 0.79032
+wandb: train_step_token_acc 0
+wandb:             val_loss 1.07034
+wandb:        val_token_acc 0.05545
+wandb: 
+wandb: 🚀 View run base-placeholder at: https://wandb.ai/gengaru617-personal/2025-11-17/runs/base-placeholder
+wandb: ⭐️ View project at: https://wandb.ai/gengaru617-personal/2025-11-17
+wandb: Synced 5 W&B file(s), 0 media file(s), 0 artifact file(s) and 0 other file(s)
+wandb: Find logs at: ./wandb/run-20251117_191410-base-placeholder/logs
