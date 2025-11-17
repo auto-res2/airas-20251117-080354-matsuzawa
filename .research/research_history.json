@@ -273,7 +273,48 @@
     "iterations": [
       {
         "iteration_id": 1,
-        "method": "Robust Median-of-Means Secant Learning Rate (RoMoS-LR)\n\nKey idea: replace the moment-based mean⁄variance in EBS-LR with a median-of-means (MoM) estimator coupled to a Catoni–type sub-Gaussian confidence radius.  MoM enjoys exponential concentration under nothing more than finite second moment and is resilient to ε≤1⁄4 arbitrary outliers.\n\nRunning window and block statistics (default M=240, K=8 blocks of 30 samples):\n• Maintain a circular buffer of the last M secant-curvature samples ĥ_t.\n• After every step partition the buffer into K non-overlapping consecutive blocks; compute their block means b_j.\n• Robust curvature estimate μ̃_t = median_j b_j.\n• Robust scale estimate s̃_t = 1.4826 · median_j |b_j − μ̃_t|  (MAD of block means).  \n\nFinite-sample lower confidence bound for true curvature h with failure probability δ_t (Lugosi & Mendelson 2019):\n h̲_t = μ̃_t − 2 s̃_t √(2 ln(2/δ_t) / (M/K)).\nThe bound holds for any distribution with finite variance and still holds if up to ⌊K/4⌋ entire blocks are adversarial.\n\nAdaptive risk budget: δ_t = δ₀·(m_t/M) where m_t≤M is the current number of filled samples (same philosophy as EBS-LR).  Default δ₀=0.05.\n\nStep selection along the AdamW direction d_t (quadratic surrogate):\nIf h̲_t > 0  lr*_t = −(g_t·d_t)/(h̲_t‖d_t‖²+ε)\nelse     lr*_t = κ·L_t/|g_t·d_t|  (κ=0.02)\nClip lr*_t to [0.1, 3.0]·lr_base.  No rollback needed because P(ΔL>0)≤δ_t by construction.\n\nComputation: one running ring-buffer update, K block sums, a partial sort to obtain the median (O(K)), and a handful of scalar ops ⇒ <0.05 % overhead on A100."
+        "method": "Robust Median-of-Means Secant Learning Rate (RoMoS-LR)\n\nKey idea: replace the moment-based mean⁄variance in EBS-LR with a median-of-means (MoM) estimator coupled to a Catoni–type sub-Gaussian confidence radius.  MoM enjoys exponential concentration under nothing more than finite second moment and is resilient to ε≤1⁄4 arbitrary outliers.\n\nRunning window and block statistics (default M=240, K=8 blocks of 30 samples):\n• Maintain a circular buffer of the last M secant-curvature samples ĥ_t.\n• After every step partition the buffer into K non-overlapping consecutive blocks; compute their block means b_j.\n• Robust curvature estimate μ̃_t = median_j b_j.\n• Robust scale estimate s̃_t = 1.4826 · median_j |b_j − μ̃_t|  (MAD of block means).  \n\nFinite-sample lower confidence bound for true curvature h with failure probability δ_t (Lugosi & Mendelson 2019):\n h̲_t = μ̃_t − 2 s̃_t √(2 ln(2/δ_t) / (M/K)).\nThe bound holds for any distribution with finite variance and still holds if up to ⌊K/4⌋ entire blocks are adversarial.\n\nAdaptive risk budget: δ_t = δ₀·(m_t/M) where m_t≤M is the current number of filled samples (same philosophy as EBS-LR).  Default δ₀=0.05.\n\nStep selection along the AdamW direction d_t (quadratic surrogate):\nIf h̲_t > 0  lr*_t = −(g_t·d_t)/(h̲_t‖d_t‖²+ε)\nelse     lr*_t = κ·L_t/|g_t·d_t|  (κ=0.02)\nClip lr*_t to [0.1, 3.0]·lr_base.  No rollback needed because P(ΔL>0)≤δ_t by construction.\n\nComputation: one running ring-buffer update, K block sums, a partial sort to obtain the median (O(K)), and a handful of scalar ops ⇒ <0.05 % overhead on A100.",
+        "experimental_design": {
+          "experiment_summary": "We will fine-tune the 0.6-billion-parameter Qwen3-0.6B language model on the GSM8K mathematics reasoning corpus with Low-Rank Adaptation (LoRA, rank = 8, bf16).  The optimiser is AdamW, but its internal learning-rate controller is replaced by the proposed Robust Median-of-Means Secant Learning-Rate rule (RoMoS-LR).  During training we continuously maintain a ring buffer of the last M=240 secant-curvature samples ĥ_t, split them into K=8 equal blocks, and compute (i) the median-of-block-means μ̃_t, (ii) a MAD-based scale estimate s̃_t, and (iii) a Catoni-style lower confidence bound h̲_t on the true curvature.  If h̲_t>0 the quadratic step length lr*_t=−(g·d)/(h̲_t‖d‖²) is taken; otherwise a conservative linear fallback lr*_t=κ·L/|g·d| is used.  lr*_t is clipped to [0.1,3]·lr_base.  The risk budget δ_t shrinks with buffer fill-ratio, guaranteeing that the probability of a loss-increasing step never exceeds δ_t even under heavy-tailed or adversarial curvature outliers.  Three random seeds are run for each configuration.  We compare RoMoS-LR against the existing Empirical-Bernstein Secant LR (EBS-LR) under two regimes: (1) normal GSM8K training and (2) a stress-tail benchmark where 0.5 % of mini-batches are duplicated and length-inflated ×16 to generate 10 000× curvature spikes.  Ablations sweep K∈{4,8,16}, M∈{120,240,480}, and δ₀∈{0.10,0.05,0.01}.  The main outcomes tracked are validation accuracy after 3 epochs, GPU-hours to reach 60 % accuracy, empirical risk-violation rate versus δ_t, and slowdown on the stress-tail benchmark.  All jobs run on a single NVIDIA A100 80 GB node with 2 TB RAM; RoMoS-LR adds <0.05 % wall-time overhead relative to plain AdamW.",
+          "evaluation_metrics": [
+            "Validation Accuracy",
+            "GPU-hours to 60% Accuracy",
+            "Empirical Violation Rate",
+            "Outlier Resilience Slowdown",
+            "1. Validation accuracy after 3 epochs. 2. GPU-hours to reach 60 % accuracy. 3. Empirical violation rate (# steps with ΔL>0) versus theoretical δ_t. 4. Outlier resilience: slowdown (extra steps to 60 %) on the stress-tail benchmark."
+          ],
+          "proposed_method": "Robust Median-of-Means Secant Learning Rate (RoMoS-LR):\n1. Maintain a circular buffer of the most recent M curvature estimates ĥ_t.\n2. Partition the buffer into K equal consecutive blocks and compute their means b_j.\n3. Robust location μ̃_t = median(b_j); robust scale s̃_t = 1.4826·median(|b_j−μ̃_t|).\n4. Finite-sample lower bound: h̲_t = μ̃_t − 2 s̃_t √(2 ln(2/δ_t)/(M/K)), δ_t = δ₀·(m_t/M).\n5. Step size along AdamW search direction d_t:\n   • If h̲_t>0: lr*_t = −(g_t·d_t)/(h̲_t‖d_t‖²+ε).\n   • Else:      lr*_t = κ·L_t/|g_t·d_t|.\n   Clip lr*_t to [0.1,3.0]·lr_base.\n6. Complexity: O(K) per step; resilience to ≤⌊K/4⌋ adversarial blocks; exponential concentration under finite variance.\nFull PyTorch reference implementation is given in the prompt (class RoMoSAdamW).",
+          "comparative_methods": [
+            "Empirical-Bernstein Secant Learning Rate (EBS-LR)"
+          ],
+          "models_to_use": [
+            "Qwen3-0.6B"
+          ],
+          "datasets_to_use": [
+            "gsm8k"
+          ],
+          "hyperparameters_to_search": {
+            "base_learning_rate": "1e-5-5e-5",
+            "delta0": "0.10,0.05,0.01",
+            "window_M": "120,240,480",
+            "num_blocks_K": "4,8,16",
+            "kappa_linear_rule": "0.01-0.05"
+          }
+        },
+        "experiment_runs": [
+          {
+            "run_id": "proposed-iter1-Qwen3-0.6B-gsm8k",
+            "method_name": "proposed",
+            "model_name": "Qwen3-0.6B",
+            "dataset_name": "gsm8k"
+          },
+          {
+            "run_id": "comparative-1-iter1-Qwen3-0.6B-gsm8k",
+            "method_name": "comparative-1",
+            "model_name": "Qwen3-0.6B",
+            "dataset_name": "gsm8k"
+          }
+        ]
       }
     ]
   }
