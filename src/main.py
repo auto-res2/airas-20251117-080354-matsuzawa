@@ -38,9 +38,19 @@ def _hydra_main(cfg: DictConfig):
 
     # determine selected runs-config -----------------------------------
     # Support both 'runs' (plural) and 'run' (singular) parameter names
-    run_cfg_name = cfg.hydra.runtime.choices.get("runs")
+    run_cfg_name = None
+
+    # Try to get from hydra runtime choices if available
+    try:
+        if hasattr(cfg, "hydra") and hasattr(cfg.hydra, "runtime") and hasattr(cfg.hydra.runtime, "choices"):
+            run_cfg_name = cfg.hydra.runtime.choices.get("runs")
+    except (AttributeError, KeyError):
+        pass
+
+    # Fall back to direct 'run' parameter
     if not run_cfg_name and hasattr(cfg, "run") and cfg.run:
         run_cfg_name = cfg.run
+
     if not run_cfg_name:
         raise ValueError("No runs config selected. Use +runs=<id> or runs=<id> (or run=<id>) on CLI.")
 
