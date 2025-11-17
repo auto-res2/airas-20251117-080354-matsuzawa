@@ -1,0 +1,10 @@
+=== [UV SYNC] Start at Mon Nov 17 10:03:44 AM UTC 2025 ===
+=== [UV SYNC] Finished successfully at Mon Nov 17 10:03:50 AM UTC 2025 ===
+=== [TRIAL RUN] Start for proposed-iter1-Qwen3-0.6B-gsm8k at Mon Nov 17 10:03:50 AM UTC 2025 ===
+[main] /home/toma/pt80-1-a-29/_work/airas-20251117-080354-matsuzawa/airas-20251117-080354-matsuzawa/.venv/bin/python3 -u -m src.train runs=proposed-iter1-Qwen3-0.6B-gsm8k results_dir=/home/toma/pt80-1-a-29/_work/airas-20251117-080354-matsuzawa/airas-20251117-080354-matsuzawa/.research/iteration1 mode=trial
+[wandb] None
+[2025-11-17 10:05:10,600][transformers.configuration_utils][WARNING] - `torch_dtype` is deprecated! Use `dtype` instead!
+[2025-11-17 10:05:22,176][accelerate.utils.modeling][INFO] - We will use 90% of the memory on device 0 for storing the model, and 10% for the buffer to avoid OOM. You can set `max_memory` in to a higher value to use more memory (at your own risk).
+[2025-11-17 10:05:24,458][transformers.tokenization_utils_base][WARNING] - You're using a Qwen2TokenizerFast tokenizer. Please note that with a fast tokenizer, using the `__call__` method is faster than using a method to encode the text followed by a call to the `pad` method to get a padded encoding.
+=== [TRIAL RUN] PASSED for proposed-iter1-Qwen3-0.6B-gsm8k at Mon Nov 17 10:05:54 AM UTC 2025 ===
+
