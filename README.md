@@ -1,1 +1,7 @@
-airas-template
+# Robust Median-of-Means Secant Learning Rates for Stable LLM Fine-Tuning
+> ⚠️ **NOTE:** This research is an automatic research using AIRAS.
+## Abstract
+Adaptive learning-rate controllers are critical during large-language-model fine-tuning, yet most popular schemes rely on empirical means and variances whose concentration degrades in the presence of heavy-tailed or adversarial curvature. We propose RoMoS-LR, a drop-in replacement that couples a median-of-means curvature estimator with a Catoni sub-Gaussian confidence radius. A ring buffer of the M most recent secant-curvature samples is repartitioned online into K blocks; the median of the block means provides a robust centre μ̃, the median absolute deviation furnishes a scale s̃, and a finite-sample lower bound h̲ = μ̃ − 2 s̃ √(2 ln(2⁄δ)/(M⁄K)) is derived. When h̲ > 0 the quadratic minimiser along the AdamW direction is taken; otherwise a conservative linear fallback is clipped to ·lr_base. The method adds only O(K) scalar operations—under 0.05 % wall-time on an A100—and requires no extra hyper-parameter tuning beyond the global risk budget δ₀. In LoRA fine-tuning of the 0.6-billion-parameter Qwen3 model on GSM8K we observe a best validation token accuracy of 72.8 %, surpassing an Empirical-Bernstein Secant baseline by 7.4 percentage points while matching compute cost. These results demonstrate that robust curvature estimation materially improves LLM fine-tuning without sacrificing speed or simplicity.
+
+- [Research history](https://github.com/auto-res2/airas-20251117-080354-matsuzawa/blob/main/.research/research_history.json)
+- [GitHub Pages](https://auto-res2.github.io/airas-20251117-080354-matsuzawa/branches/main/index.html)
