@@ -55,7 +55,7 @@ dataset:
     seed: 42
 
 model:
-  name: Qwen/Qwen1-0.5B
+  name: Qwen/Qwen2.5-0.5B
   dtype: bf16
 
 # each run-config supplies its own run_id -----------------------------------

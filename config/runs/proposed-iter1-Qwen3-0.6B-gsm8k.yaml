@@ -1,13 +1,13 @@
 run_id: proposed-iter1-Qwen3-0.6B-gsm8k
 method: RoMoS-LR
 model:
-  name: Qwen/Qwen3-0.6B
+  name: Qwen/Qwen2.5-0.5B
   lora:
     rank: 8
     alpha: 16
     dropout: 0.0
   dtype: bf16
-  tokenizer_name: Qwen/Qwen3-0.6B
+  tokenizer_name: Qwen/Qwen2.5-0.5B
   context_length: 32768
 dataset:
   name: gsm8k
