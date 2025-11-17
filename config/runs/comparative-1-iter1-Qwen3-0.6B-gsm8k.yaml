@@ -1,0 +1,66 @@
+run_id: comparative-1-iter1-Qwen3-0.6B-gsm8k
+method: EBS-LR
+model:
+  name: Qwen3-0.6B
+  lora:
+    rank: 8
+    alpha: 16
+    dropout: 0.0
+  dtype: bf16
+  tokenizer_name: Qwen/Qwen3-0.6B
+  context_length: 32768
+dataset:
+  name: gsm8k
+  split: main
+  preprocessing:
+    max_seq_length: 2048
+    pad_to_max_length: false
+    shuffle: true
+    seed: 42
+training:
+  optimizer: adamw
+  learning_rate_base: 2e-5
+  lr_scheduler: EBS-LR
+  ebs_lr:
+    delta0: 0.05
+    window_M: 240
+    clip_low: 0.1
+    clip_high: 3.0
+    var_smoothing: 1e-8
+  weight_decay: 0.01
+  beta1: 0.9
+  beta2: 0.95
+  eps: 1e-8
+  batch_size_per_device: 32
+  micro_batch_size: 4
+  gradient_accumulation_steps: 8
+  max_epochs: 3
+  warmup_ratio: 0.03
+  logging_steps: 50
+  eval_steps: 500
+  save_steps: 1000
+  seed: 42
+resources:
+  gpus: 1
+  gpu_type: A100-80GB
+  max_vram_gb: 80
+  max_ram_gb: 2048
+optuna:
+  n_trials: 30
+  direction: maximize
+  metric: validation_accuracy
+  search_space:
+    learning_rate_base:
+      type: loguniform
+      low: 1e-5
+      high: 5e-5
+    delta0:
+      type: categorical
+      choices: [0.10, 0.05, 0.01]
+    window_M:
+      type: categorical
+      choices: [120, 240, 480]
+    weight_decay:
+      type: loguniform
+      low: 1e-5
+      high: 1e-2

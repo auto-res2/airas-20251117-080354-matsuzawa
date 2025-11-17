@@ -1,0 +1,62 @@
+# config/config.yaml – global defaults & placeholders
+
+defaults:
+  - _self_
+  - optional runs: ""  # will be provided on CLI, e.g. runs=proposed-iter1-...
+
+# execution mode – must be overridden via CLI (trial|full)
+mode: full
+
+results_dir: "./results"
+
+wandb:
+  entity: gengaru617-personal
+  project: 2025-11-17
+  mode: online  # set to "disabled" automatically in trial-mode
+
+optuna:
+  n_trials: 0
+  metric: val_token_acc
+  search_space: {}
+
+training:
+  seed: 42
+  max_epochs: 3
+  micro_batch_size: 4
+  learning_rate_base: 2e-5
+  lr_scheduler: adamw
+  beta1: 0.9
+  beta2: 0.95
+  eps: 1e-8
+  weight_decay: 0.01
+
+  # RoMoS specific ------------------------------------------------------
+  romos_lr:
+    delta0: 0.05
+    kappa: 0.02
+    window_M: 240
+    num_blocks_K: 8
+    clip_low: 0.1
+    clip_high: 3.0
+  # EBS specific --------------------------------------------------------
+  ebs_lr:
+    delta0: 0.05
+    window_M: 240
+    clip_low: 0.1
+    clip_high: 3.0
+    var_smoothing: 1e-8
+
+dataset:
+  name: gsm8k
+  split: main
+  preprocessing:
+    max_seq_length: 1024
+    shuffle: true
+    seed: 42
+
+model:
+  name: Qwen/Qwen1-0.5B
+  dtype: bf16
+
+# each run-config supplies its own run_id -----------------------------------
+run_id: base-placeholder
