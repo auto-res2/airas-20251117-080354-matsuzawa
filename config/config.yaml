@@ -60,3 +60,6 @@ model:
 
 # each run-config supplies its own run_id -----------------------------------
 run_id: base-placeholder
+
+# Alternative parameter name for runs (singular form for compatibility)
+run: ""
