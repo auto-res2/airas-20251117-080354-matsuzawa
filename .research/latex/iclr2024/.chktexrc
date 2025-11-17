@@ -1,0 +1,5 @@
+# Disable specific warnings
+# Warning 1: Command terminated with space
+# Warning 8: Wrong length of dash may have been used
+# Warning 13: Intersentence spacing
+CmdLine { -n1 -n8 -n13 }

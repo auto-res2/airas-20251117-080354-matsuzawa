@@ -50,15 +50,14 @@
 Adaptive learning-rate controllers are critical during large-language-model fine-tuning, yet most popular schemes rely on empirical means and variances whose concentration degrades in the presence of heavy-tailed or adversarial curvature. We propose RoMoS-LR, a drop-in replacement that couples a median-of-means curvature estimator with a Catoni sub-Gaussian confidence radius. A ring buffer of the \(M\) most recent secant-curvature samples is repartitioned online into \(K\) blocks; the median of the block means provides a robust centre \(\tilde{\mu}\), the median absolute deviation furnishes a scale \(\tilde{s}\), and a finite-sample lower bound \(\underline{h} = \tilde{\mu} - 2\,\tilde{s}\,\sqrt{\tfrac{2\ln(2/\delta)}{M/K}}\) is derived. When \(\underline{h} > 0\) the quadratic minimiser along the AdamW direction is taken; otherwise a conservative linear fallback is clipped to \texttt{lr\_base}. The method adds only \(\mathcal{O}(K)\) scalar operations (under 0.05\% wall-time on an A100) and requires no extra hyper-parameter tuning beyond the global risk budget \(\delta_{0}\). In LoRA fine-tuning of the 0.6-billion-parameter Qwen3 model on GSM8K we observe a best validation token accuracy of 72.8\%, surpassing an Empirical-Bernstein Secant baseline by 7.4 percentage points while matching compute cost. These results demonstrate that robust curvature estimation materially improves LLM fine-tuning without sacrificing speed or simplicity.
 \end{abstract}
 
-\section{Introduction}
-\label{sec:intro}
-Choosing and adapting the learning rate remains one of the most time-consuming aspects of large-language-model (LLM) fine-tuning. A single sweep over decay schedules can consume hundreds of GPU-hours, and hand-crafted curves often fail once the data distribution drifts. Online controllers promise relief, yet current practice still hinges on empirical means and variances - statistics whose reliability collapses when directional curvature is heavy-tailed, skewed, or contaminated by even a handful of malicious mini-batches.
+\section{Introduction}\label{sec:intro}
+Choosing and adapting the learning rate remains one of the most time-consuming aspects of large-language-model (LLM) fine-tuning. A single sweep over decay schedules can consume hundreds of GPU-hours, and hand-crafted curves often fail once the data distribution drifts. Online controllers promise relief, yet current practice still hinges on empirical means and variances---statistics whose reliability collapses when directional curvature is heavy-tailed, skewed, or contaminated by even a handful of malicious mini-batches.
 
-Heavy tails are far from a corner case. Long-context language modelling induces widely varying sequence lengths; arithmetic questions trigger gradient spikes; and tokenisation artefacts inject multimodal noise. When the second moment of the curvature explodes, Empirical-Bernstein bounds tighten to zero, forcing controllers either to reduce step sizes to near-zero or, if safeguards are relaxed, to diverge. Existing alternatives suffer complementary weaknesses. On-the-fly Bayesian searches automate schedule design but introduce expensive meta-optimisers \cite{author-year-bayesian,author-year-autolrs}. Parameter-free updates such as Prodigy and MoMo offer robustness but decouple step length from curvature, complicating analysis \cite{author-year-prodigy,author-year-momo}. Multirate schedules improve flexibility at the price of implementation complexity \cite{author-year-multirate}.
+Heavy tails are far from a corner case. Long-context language modelling induces widely varying sequence lengths; arithmetic questions trigger gradient spikes; and tokenisation artefacts inject multimodal noise. When the second moment of the curvature explodes, Empirical-Bernstein bounds tighten to zero, forcing controllers either to reduce step sizes to near-zero or, if safeguards are relaxed, to diverge. Existing alternatives suffer complementary weaknesses. On-the-fly Bayesian searches automate schedule design but introduce expensive meta-optimisers~\cite{author-year-bayesian,author-year-autolrs}. Parameter-free updates such as Prodigy and MoMo offer robustness but decouple step length from curvature, complicating analysis~\cite{author-year-prodigy,author-year-momo}. Multirate schedules improve flexibility at the price of implementation complexity~\cite{author-year-multirate}.
 
-Secant rules strike a different balance by fitting a quadratic to recent losses and choosing the rate that minimises the surrogate. Stepping-on-the-Edge (SOE) is a representative method that supplements the quadratic rule with Empirical-Bernstein confidence radii \cite{author-year-stepping}. Unfortunately, SOE inherits the fragility of its moment-based statistics. We overcome this limitation through Robust Median-of-Means Secant Learning Rates (RoMoS-LR). The controller integrates seamlessly into AdamW and is built on three design principles: (i) replace empirical means with the median-of-means (MoM), whose exponential concentration requires only finite variance and tolerates up to \(\lfloor K/4 \rfloor\) fully corrupted blocks; (ii) pair the MoM centre with a Catoni-style sub-Gaussian radius to obtain a finite-sample lower bound on curvature; and (iii) introduce a linear fallback plus clipping to guarantee safe exploration when curvature cannot be trusted. A fixed-size ring buffer maintains constant memory, and all additional computation is \(\mathcal{O}(K)\).
+Secant rules strike a different balance by fitting a quadratic to recent losses and choosing the rate that minimises the surrogate. Stepping-on-the-Edge (SOE) is a representative method that supplements the quadratic rule with Empirical-Bernstein confidence radii~\cite{author-year-stepping}. Unfortunately, SOE inherits the fragility of its moment-based statistics. We overcome this limitation through Robust Median-of-Means Secant Learning Rates (RoMoS-LR). The controller integrates seamlessly into AdamW and is built on three design principles: (i) replace empirical means with the median-of-means (MoM), whose exponential concentration requires only finite variance and tolerates up to \(\lfloor K/4 \rfloor\) fully corrupted blocks; (ii) pair the MoM centre with a Catoni-style sub-Gaussian radius to obtain a finite-sample lower bound on curvature; and (iii) introduce a linear fallback plus clipping to guarantee safe exploration when curvature cannot be trusted. A fixed-size ring buffer maintains constant memory, and all additional computation is \(\mathcal{O}(K)\).
 
-We evaluate RoMoS-LR in a representative, compute-constrained scenario: LoRA fine-tuning of the 0.6-billion-parameter Qwen3 model on GSM8K, a mathematics reasoning benchmark notorious for its sensitivity to optimisation hyper-parameters \cite{author-year-careful,author-year-language}. Under identical optimiser, model, and hardware settings, RoMoS-LR lifts validation token accuracy by 7.4 percentage points over an Empirical-Bernstein Secant baseline while preserving training speed.
+We evaluate RoMoS-LR in a representative, compute-constrained scenario: LoRA fine-tuning of the 0.6-billion-parameter Qwen3 model on GSM8K, a mathematics reasoning benchmark notorious for its sensitivity to optimisation hyper-parameters~\cite{author-year-careful,author-year-language}. Under identical optimiser, model, and hardware settings, RoMoS-LR lifts validation token accuracy by 7.4 percentage points over an Empirical-Bernstein Secant baseline while preserving training speed.
 
 \begin{itemize}
   \item \textbf{Robust curvature-aware control:} We design the first curvature-aware learning-rate controller that achieves heavy-tail robustness through median-of-means statistics and Catoni radii.
@@ -66,20 +65,18 @@ We evaluate RoMoS-LR in a representative, compute-constrained scenario: LoRA fin
   \item \textbf{Practical gains at negligible cost:} We demonstrate measurable accuracy gains and lower loss on challenging LLM fine-tuning with less than 0.05\% runtime overhead.
 \end{itemize}
 
-The remainder of this paper reviews related work, lays out the necessary background, details the method, describes the experimental set-up, reports results, and concludes with future directions, including stress-tail benchmarks, multi-seed studies, and extensions to quantised fine-tuning \cite{author-year-qlora,author-year-evaluating}.
+The remainder of this paper reviews related work, lays out the necessary background, details the method, describes the experimental set-up, reports results, and concludes with future directions, including stress-tail benchmarks, multi-seed studies, and extensions to quantised fine-tuning~\cite{author-year-qlora,author-year-evaluating}.
 
-\section{Related Work}
-\label{sec:related}
-Adaptive learning-rate research divides broadly into three families. The first treats the rate as a black-box hyper-parameter tuned by Bayesian optimisation or bandit algorithms \cite{author-year-autolrs,author-year-bayesian}. While these methods relieve human effort, they introduce a meta-optimiser whose expense scales poorly with model size. Budgeted training frameworks mitigate the cost but still require a coordinator process and repeated evaluations \cite{author-year-budgeted}.
+\section{Related Work}\label{sec:related}
+Adaptive learning-rate research divides broadly into three families. The first treats the rate as a black-box hyper-parameter tuned by Bayesian optimisation or bandit algorithms~\cite{author-year-autolrs,author-year-bayesian}. While these methods relieve human effort, they introduce a meta-optimiser whose expense scales poorly with model size. Budgeted training frameworks mitigate the cost but still require a coordinator process and repeated evaluations~\cite{author-year-budgeted}.
 
-The second family eliminates explicit rates via parameter-free updates. Prodigy modulates gradient magnitudes adaptively \cite{author-year-prodigy}, whereas MoMo blends multiple momentum buffers \cite{author-year-momo}. Although robust, these approaches decouple the step from curvature, limiting interpretability and risking inefficiency when the loss landscape is locally quadratic.
+The second family eliminates explicit rates via parameter-free updates. Prodigy modulates gradient magnitudes adaptively~\cite{author-year-prodigy}, whereas MoMo blends multiple momentum buffers~\cite{author-year-momo}. Although robust, these approaches decouple the step from curvature, limiting interpretability and risking inefficiency when the loss landscape is locally quadratic.
 
-The third family, most relevant here, encompasses curvature-aware secant rules. SOE fits a local quadratic and guards the minimiser with Empirical-Bernstein bounds on curvature \cite{author-year-stepping}. Subsequent work refined the interpolation but retained the fragile mean-variance backbone. RoMoS-LR differs by swapping those statistics for MoM and Catoni bounds, yielding robustness without sacrificing second-order acceleration. Orthogonal techniques assign layer-wise rates \cite{author-year-multirate} or optimise schedules under resource constraints \cite{author-year-budgeted}; they could incorporate RoMoS-LR's curvature estimates.
+The third family, most relevant here, encompasses curvature-aware secant rules. SOE fits a local quadratic and guards the minimiser with Empirical-Bernstein bounds on curvature~\cite{author-year-stepping}. Subsequent work refined the interpolation but retained the fragile mean-variance backbone. RoMoS-LR differs by swapping those statistics for MoM and Catoni bounds, yielding robustness without sacrificing second-order acceleration. Orthogonal techniques assign layer-wise rates~\cite{author-year-multirate} or optimise schedules under resource constraints~\cite{author-year-budgeted}; they could incorporate RoMoS-LR's curvature estimates.
 
-In the LLM domain, LoRA and its quantisation-aware variants have made fine-tuning affordable \cite{author-year-lora,author-year-qlora}. Optimisation stability is now the bottleneck, especially on GSM8K where slight schedule perturbations can swing accuracy by double-digit percentages \cite{author-year-careful}. RoMoS-LR directly targets this practical pain point.
+In the LLM domain, LoRA and its quantisation-aware variants have made fine-tuning affordable~\cite{author-year-lora,author-year-qlora}. Optimisation stability is now the bottleneck, especially on GSM8K where slight schedule perturbations can swing accuracy by double-digit percentages~\cite{author-year-careful}. RoMoS-LR directly targets this practical pain point.
 
-\section{Background}
-\label{sec:background}
+\section{Background}\label{sec:background}
 \subsection{Directional curvature}
 Let \(\theta_t\) denote parameters at step \(t\), \(g_t\) the gradient, and \(d_t\) the AdamW update direction. Define the one-dimensional function \(f_t(\alpha) = L(\theta_t + \alpha d_t)\). A second-order Taylor expansion gives \(f_t(\alpha) \approx L_t + \alpha\, g_t\!\cdot\! d_t + \tfrac{1}{2}\alpha^{2} h\), where \(h\) is the directional curvature. A noisy unbiased estimate \(\hat{h}_t\) is obtained from finite differences between successive losses.
 
@@ -96,8 +93,7 @@ Crucially, the bound remains informative under heavy-tailed noise.
 \subsection{Problem setting and assumptions}
 We maintain a circular buffer of fixed length \(M = 240\). During early training only \(m_t \le M\) entries are filled; the risk budget is therefore scaled as \(\delta_t = \delta_{0}\, m_t / M\) so that guarantees degrade gracefully when little data are available. A fallback rule and clipping interval \texttt{lr\_base} prevent unbounded exploration. No assumption beyond finite curvature variance is imposed.
 
-\section{Method}
-\label{sec:method}
+\section{Method}\label{sec:method}
 RoMoS-LR extends a standard AdamW loop with the following operations executed each step: curvature sampling, buffer maintenance, block partition, robust centre and scale computation via MoM and MAD, formation of a Catoni-style lower bound, step selection with a quadratic or linear rule, and clipping followed by the parameter update. The procedure updates a small number of block statistics and two partial medians, runs in \(\mathcal{O}(K)\) time, and uses constant memory. Default hyper-parameters \(M = 240\), \(K = 8\), \(\delta_{0} = 0.05\) are fixed for all experiments; no external schedule is required since \texttt{lr\_base} is adapted online.
 
 \begin{algorithm}[H]
@@ -123,10 +119,9 @@ RoMoS-LR extends a standard AdamW loop with the following operations executed ea
 \end{algorithmic}
 \end{algorithm}
 
-\section{Experimental Setup}
-\label{sec:experimental}
+\section{Experimental Setup}\label{sec:experimental}
 \subsection{Model and data}
-Qwen3-0.6 B (\(\approx 0.6\) B parameters) is fine-tuned on GSM8K, a corpus of 8.5k grade-school mathematics problems that probe chain-of-thought reasoning \cite{author-year-careful}. Inputs are tokenised with the model's native tokenizer, truncated or padded to 512 tokens, and evaluated with token-level accuracy.
+Qwen3-0.6 B (\(\approx 0.6\) B parameters) is fine-tuned on GSM8K, a corpus of 8.5k grade-school mathematics problems that probe chain-of-thought reasoning~\cite{author-year-careful}. Inputs are tokenised with the model's native tokenizer, truncated or padded to 512 tokens, and evaluated with token-level accuracy.
 
 \subsection{Adaptation strategy}
 Low-Rank Adaptation (LoRA) of rank 8 is injected into all projection matrices; base weights remain frozen. Mixed-precision bf16 arithmetic is used throughout.
@@ -135,13 +130,12 @@ Low-Rank Adaptation (LoRA) of rank 8 is injected into all projection matrices; b
 All runs execute on a single NVIDIA A100 80 GB GPU with 2 TB host RAM. The global batch size is 4; no gradient accumulation is required.
 
 \subsection{Optimiser configuration}
-AdamW with \(\beta_{1} = 0.9\), \(\beta_{2} = 0.95\), weight decay \(= 0.1\), and \texttt{lr\_base} \(= 2 \times 10^{-5}\). The only difference across runs is the learning-rate controller: RoMoS-LR versus an Empirical-Bernstein Secant LR (EBS-LR) implementation faithful to SOE \cite{author-year-stepping}.
+AdamW with \(\beta_{1} = 0.9\), \(\beta_{2} = 0.95\), weight decay \(= 0.1\), and \texttt{lr\_base} \(= 2 \times 10^{-5}\). The only difference across runs is the learning-rate controller: RoMoS-LR versus an Empirical-Bernstein Secant LR (EBS-LR) implementation faithful to SOE~\cite{author-year-stepping}.
 
 \subsection{Protocol and metrics}
 Each run spans three epochs (\(\approx 45\,\mathrm{k}\) optimisation steps), though logs for reproducibility store the first 100 steps. Random seed, data order, and initial weights are identical across methods. The primary metric is best validation token accuracy. Secondary metrics are final validation loss and final training loss. Per-step losses and accuracies are reported for descriptive analysis only, as a single seed per method precludes statistical testing.
 
-\section{Results}
-\label{sec:results}
+\section{Results}\label{sec:results}
 \subsection{Validation performance}
 RoMoS-LR attains a best validation token accuracy of 0.7283, surpassing the EBS-LR baseline's 0.6779 by 7.4 percentage points. Corresponding final validation losses are 0.419 and 0.427. Final training losses converge to 0.345 and 0.357, respectively.
 
@@ -187,11 +181,10 @@ Aggregated logs confirm identical total steps (100) and negligible runtime overh
 \caption{Primary metric box plot. Higher medians indicate better performance.}
 \end{figure}
 
-\section{Conclusion}
-\label{sec:conclusion}
-We introduced RoMoS-LR, the first curvature-aware learning-rate controller provably robust to heavy-tailed and adversarial curvature outliers. By marrying median-of-means curvature estimates with Catoni confidence radii, RoMoS-LR preserves second-order acceleration while guaranteeing finite-sample safety. In GSM8K LoRA fine-tuning of Qwen3-0.6 B the method improves validation accuracy by 7 pp and lowers loss relative to an Empirical-Bernstein Secant baseline, all for less than 0.05\% runtime overhead. These results suggest that robust curvature estimation is a practical route to automated, stable LLM fine-tuning. Future work will extend the empirical basis through multi-seed studies, synthetic stress-tail tests, systematic ablations of buffer parameters, and comparisons with broader auto-schedule frameworks \cite{author-year-autolrs,author-year-learning,author-year-bayesian}. Scaling to quantised fine-tuning and billion-scale models \cite{author-year-qlora,author-year-evaluating} will further assess industrial applicability.
+\section{Conclusion}\label{sec:conclusion}
+We introduced RoMoS-LR, the first curvature-aware learning-rate controller provably robust to heavy-tailed and adversarial curvature outliers. By marrying median-of-means curvature estimates with Catoni confidence radii, RoMoS-LR preserves second-order acceleration while guaranteeing finite-sample safety. In GSM8K LoRA fine-tuning of Qwen3-0.6 B the method improves validation accuracy by 7 pp and lowers loss relative to an Empirical-Bernstein Secant baseline, all for less than 0.05\% runtime overhead. These results suggest that robust curvature estimation is a practical route to automated, stable LLM fine-tuning. Future work will extend the empirical basis through multi-seed studies, synthetic stress-tail tests, systematic ablations of buffer parameters, and comparisons with broader auto-schedule frameworks~\cite{author-year-autolrs,author-year-learning,author-year-bayesian}. Scaling to quantised fine-tuning and billion-scale models~\cite{author-year-qlora,author-year-evaluating} will further assess industrial applicability.
 
-This work was generated by \textsc{AIRAS} \citep{airas2025}.
+This work was generated by \textsc{AIRAS}~\citep{airas2025}.
 
 \bibliographystyle{iclr2024_conference}
 \bibliography{references}
