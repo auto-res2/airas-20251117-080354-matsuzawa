@@ -74,7 +74,7 @@ def _train_epoch(model: torch.nn.Module, loader: DataLoader, optimiser: torch.op
         loss_tensor = optimiser.step(closure) if hasattr(optimiser, "step") else closure()
 
         # per-batch logging ------------------------------------------------
-        if log and wandb.run and wandb.run.mode != "disabled":
+        if log and wandb.run and not getattr(wandb.run, "disabled", False):
             logits = model(**batch).logits.detach()
             tok_acc = _token_accuracy(logits, batch["labels"])
             wandb.log({
