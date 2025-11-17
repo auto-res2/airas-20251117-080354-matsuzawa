@@ -8,3 +8,21 @@
 [2025-11-17 10:05:24,458][transformers.tokenization_utils_base][WARNING] - You're using a Qwen2TokenizerFast tokenizer. Please note that with a fast tokenizer, using the `__call__` method is faster than using a method to encode the text followed by a call to the `pad` method to get a padded encoding.
 === [TRIAL RUN] PASSED for proposed-iter1-Qwen3-0.6B-gsm8k at Mon Nov 17 10:05:54 AM UTC 2025 ===
 
+=== [UV SYNC] Start at Mon Nov 17 10:09:16 AM UTC 2025 ===
+=== [UV SYNC] Finished successfully at Mon Nov 17 10:09:23 AM UTC 2025 ===
+=== [TRIAL RUN] Start for comparative-1-iter1-Qwen3-0.6B-gsm8k at Mon Nov 17 10:09:23 AM UTC 2025 ===
+[main] /home/toma/t-80-8-b-03/_work/airas-20251117-080354-matsuzawa/airas-20251117-080354-matsuzawa/.venv/bin/python3 -u -m src.train runs=comparative-1-iter1-Qwen3-0.6B-gsm8k results_dir=/home/toma/t-80-8-b-03/_work/airas-20251117-080354-matsuzawa/airas-20251117-080354-matsuzawa/.research/iteration1 mode=trial
+[wandb] None
+[2025-11-17 10:09:58,615][transformers.configuration_utils][WARNING] - `torch_dtype` is deprecated! Use `dtype` instead!
+[2025-11-17 10:10:06,758][accelerate.utils.modeling][INFO] - Based on the current allocation process, no modules could be assigned to the following devices due to insufficient memory:
+  - 0: 302094080 bytes required
+  - 1: 272269312 bytes required
+  - 2: 272269312 bytes required
+  - 3: 272269312 bytes required
+  - 4: 272269312 bytes required
+  - 5: 272269312 bytes required
+  - 6: 272269312 bytes required
+These minimum requirements are specific to this allocation attempt and may vary. Consider increasing the available memory for these devices to at least the specified minimum, or adjusting the model config.
+[2025-11-17 10:10:11,629][transformers.tokenization_utils_base][WARNING] - You're using a Qwen2TokenizerFast tokenizer. Please note that with a fast tokenizer, using the `__call__` method is faster than using a method to encode the text followed by a call to the `pad` method to get a padded encoding.
+=== [TRIAL RUN] PASSED for comparative-1-iter1-Qwen3-0.6B-gsm8k at Mon Nov 17 10:10:29 AM UTC 2025 ===
+
